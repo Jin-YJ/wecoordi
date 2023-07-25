@@ -39,7 +39,7 @@ class wecoordiHome extends StatelessWidget {
     'wecoordi',
     style: TextStyle(
       fontFamily: 'assets/fonts/logo_font.ttf', // 폰트 파일의 경로를 지정
-      fontSize: 20,
+      fontSize: 20,  
       fontWeight: FontWeight.bold,
       color: Colors.black, 
     ),
