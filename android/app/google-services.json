@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "14960927041",
+    "project_id": "wecoordi",
+    "storage_bucket": "wecoordi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:14960927041:android:c811221ddad3bc08b0c1c0",
+        "android_client_info": {
+          "package_name": "com.example.wecoordi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "14960927041-81hqaj7rcna2bv8evkjutl14nn5ssns0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2kWJNIIsXbzxE-asqxv5IbrnBNX-9fH4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "14960927041-81hqaj7rcna2bv8evkjutl14nn5ssns0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
