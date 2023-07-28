@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wecoordi/wecoordi_main/recommend.dart';
-import 'appBar/wecoordiappbar.dart';
+import 'app_bar/wecoordiappbar.dart';
+import 'bottom_bar/bottom_bar.dart';
 import 'wecoordi_main/following.dart';
 
 void main() {
@@ -29,7 +31,13 @@ class wecoordiHome extends StatefulWidget {
 
 class _wecoordiHomeState extends State<wecoordiHome> {
   int _currentIndex = 0;
+  int _selectedIndex = 0;
 
+   void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,6 +79,10 @@ class _wecoordiHomeState extends State<wecoordiHome> {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: BottomBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../feed/feed_main.dart';
+
 class Following extends StatefulWidget {
   const Following({
     Key? key,
@@ -75,68 +77,12 @@ class _FollowingState extends State<Following> {
             itemCount: 5, // 무한 스크롤을 위해 충분한 아이템 개수로 설정해주세요.
             itemBuilder: (context, index) {
               // 여기에 DB에서 받아온 피드 데이터를 표시하는 코드를 추가하면 됩니다.
-              return _buildFeedItem(); // 임시로 피드 아이템 생성하는 함수 호출
+              return feedMain(); // 임시로 피드 아이템 생성하는 함수 호출
             },
           ),
         ),
       ],
     );
   }
-
-  Widget _buildFeedItem() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 400, // 피드 사진의 높이를 고정으로 설정
-            width: double.infinity, // 피드 사진의 너비는 화면 너비에 맞게 가변적으로 설정
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10), // 피드의 모서리를 둥글게 설정
-              image: DecorationImage(
-                image: AssetImage('assets/4241.jpg'), // 임시로 이미지 설정, db랑 연동
-                
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          SizedBox(height: 10),
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.favorite_border),
-                onPressed: () {},
-              ),
-              IconButton(
-                icon: Icon(Icons.chat_bubble_outline),
-                onPressed: () {},
-              ),
-              Spacer(),
-              IconButton(
-                icon: Icon(Icons.bookmark_border),
-                onPressed: () {},
-              )
-            ],
-          ),
-          SizedBox(height: 8),
-          Text(
-            "2 likes",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 4),
-          Text("카페에서.."),
-          SizedBox(height: 4),
-          Text(
-            "FEBURARY 6",
-            style: TextStyle(
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
+
