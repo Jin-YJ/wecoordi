@@ -95,7 +95,8 @@ class _FollowingState extends State<Following> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10), // 피드의 모서리를 둥글게 설정
               image: DecorationImage(
-                image: AssetImage('assets/images/4241.jpg'), // 임시로 이미지 설정
+                image: AssetImage('assets/4241.jpg'), // 임시로 이미지 설정, db랑 연동
+                
                 fit: BoxFit.cover,
               ),
             ),
