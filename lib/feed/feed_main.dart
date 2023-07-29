@@ -8,7 +8,7 @@ class feedMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -16,10 +16,8 @@ class feedMain extends StatelessWidget {
             height: 400, // 피드 사진의 높이를 고정으로 설정
             width: double.infinity, // 피드 사진의 너비는 화면 너비에 맞게 가변적으로 설정
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10), // 피드의 모서리를 둥글게 설정
               image: DecorationImage(
                 image: AssetImage('assets/4241.jpg'), // 임시로 이미지 설정, db랑 연동
-                
                 fit: BoxFit.cover,
               ),
             ),

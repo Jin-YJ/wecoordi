@@ -1,21 +1,29 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:wecoordi/wecoordi_main/recommend.dart';
+import 'package:provider/provider.dart';
 import 'app_bar/wecoordiappbar.dart';
 import 'bottom_bar/bottom_bar.dart';
 import 'wecoordi_main/following.dart';
+import 'wecoordi_main/recommend.dart';
+import 'wecoordi_provider/wecoordi_provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => WecoordiProvider()),
+        
+        // 다른 프로바이더가 있다면 여기에 추가로 등록합니다.
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
 
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: wecoordiHome(),
     );
@@ -23,21 +31,23 @@ class MyApp extends StatelessWidget {
 }
 
 class wecoordiHome extends StatefulWidget {
-  const wecoordiHome({super.key});
+  wecoordiHome({Key? key}) : super(key: key);
 
   @override
   _wecoordiHomeState createState() => _wecoordiHomeState();
 }
 
 class _wecoordiHomeState extends State<wecoordiHome> {
-  int _currentIndex = 0;
-  int _selectedIndex = 0;
-
-   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  int _currentIndex = 0;  //팔로우, 추천 탭이동 인덱스
+  int _bottomNavIndex(BuildContext context) { //바텀네비게이션바 인덱스
+    return Provider.of<WecoordiProvider>(context).bottomNavIndex;
   }
+
+  void _onItemTapped(BuildContext context, int index) {
+    // 프로바이더를 통해 선택된 인덱스를 업데이트합니다.
+    Provider.of<WecoordiProvider>(context, listen: false).bottomNavIndex = index;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,11 +55,11 @@ class _wecoordiHomeState extends State<wecoordiHome> {
       body: Column(
         children: [
           Container(
-            color: Colors.white, // 버튼 배경색을 바탕색과 동일하게 설정
-            height: 48, // 버튼 높이
+            color: Colors.white,
+            height: 48,
             child: ListView.builder(
-              scrollDirection: Axis.horizontal, // 가로로 스크롤
-              itemCount: 2, // 버튼 개수
+              scrollDirection: Axis.horizontal,
+              itemCount: 2,
               itemBuilder: (context, index) {
                 return TextButton(
                   onPressed: () {
@@ -58,11 +68,14 @@ class _wecoordiHomeState extends State<wecoordiHome> {
                     });
                   },
                   style: TextButton.styleFrom(
-                    backgroundColor: Colors.white, // 버튼 배경색을 바탕색과 동일하게 설정
-                    primary: Colors.black, // 텍스트 색상
-                    padding: EdgeInsets.symmetric(horizontal: 16), // 버튼 좌우 padding
+                    backgroundColor: Colors.white,
+                    primary: Colors.black,
+                    padding: EdgeInsets.symmetric(horizontal: 16),
                   ),
-                  child: Text(index == 0 ? '팔로잉' : '추천', style: GoogleFonts.blackHanSans(textStyle: TextStyle(color: Colors.black))), // 버튼 텍스트
+                  child: Text(
+                    index == 0 ? '팔로잉' : '추천',
+                    style: TextStyle(color: Colors.black),
+                  ),
                 );
               },
             ),
@@ -81,8 +94,10 @@ class _wecoordiHomeState extends State<wecoordiHome> {
         ],
       ),
       bottomNavigationBar: BottomBar(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
+        bottomNavIndex: _bottomNavIndex,
+        onItemTapped: (index) => _onItemTapped(context, index),
+        context: context,
+      
       ),
     );
   }
