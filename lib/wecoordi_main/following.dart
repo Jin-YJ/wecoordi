@@ -9,7 +9,7 @@ class Following extends StatefulWidget {
 
   static const memberIds = ['test1', 'test2', 'test3'];
   // 프로필 사진은 나중에 DB에서 가져오기 때문에 주석으로 설명만 표시합니다.
-  static const memberPhotos = ['assets/images/4241.jpg', 'assets/images/4241.jpg', 'assets/images/4241.jpg'];
+  static const memberPhotos = ['assets/4241.jpg', 'assets/4241.jpg', 'assets/4241.jpg'];
 
   @override
   State<Following> createState() => _FollowingState();
@@ -85,4 +85,3 @@ class _FollowingState extends State<Following> {
     );
   }
 }
-

@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app_bar/wecoordiappbar.dart';
@@ -6,19 +7,21 @@ import 'wecoordi_main/following.dart';
 import 'wecoordi_main/recommend.dart';
 import 'wecoordi_provider/wecoordi_provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => WecoordiProvider()),
-        
+
         // 다른 프로바이더가 있다면 여기에 추가로 등록합니다.
       ],
       child: MyApp(),
     ),
   );
 }
-
 
 class MyApp extends StatelessWidget {
   @override
@@ -38,8 +41,9 @@ class wecoordiHome extends StatefulWidget {
 }
 
 class _wecoordiHomeState extends State<wecoordiHome> {
-  int _currentIndex = 0;  //팔로우, 추천 탭이동 인덱스
-  int _bottomNavIndex(BuildContext context) { //바텀네비게이션바 인덱스
+  int _currentIndex = 0; //팔로우, 추천 탭이동 인덱스
+  int _bottomNavIndex(BuildContext context) {
+    //바텀네비게이션바 인덱스
     return Provider.of<WecoordiProvider>(context).bottomNavIndex;
   }
 
@@ -97,7 +101,6 @@ class _wecoordiHomeState extends State<wecoordiHome> {
         bottomNavIndex: _bottomNavIndex,
         onItemTapped: (index) => _onItemTapped(context, index),
         context: context,
-      
       ),
     );
   }
