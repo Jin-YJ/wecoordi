@@ -7,6 +7,7 @@ import '../app_bar/wecoordiappbar.dart';
 import '../bottom_bar/bottom_bar.dart';
 import '../wecoordi_provider/wecoordi_provider.dart';
 import 'my_page_home_login.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -14,12 +15,38 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  //파이어베이스의 인스턴스 가져옴
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // Firestore에 새로운 사용자 정보 추가
+  void addNewUser() {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      FirebaseFirestore.instance.collection('user').doc(user.uid).set({
+        'email': user.email,
+        'nickName': user.displayName,
+        'Reserves': 0,
+        'introMsg': '',
+        'profileImage': ''
+        // 기타 추가할 사용자 정보 필드가 있다면 이곳에 추가 가능
+      }).then((_) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MyPageHomeLogin()),
+        );
+      }).catchError((error) {
+        print("사용자 정보 추가 중 오류가 발생했습니다: $error");
+      });
+    }
+  }
+
+  // botomNavIndex를 프로바이더에서 꺼내옴
   int _bottomNavIndex(BuildContext context) {
     return Provider.of<WecoordiProvider>(context).bottomNavIndex;
   }
 
+  //탭 클릭 시 프로바이더에 탭의 인덱스를 저장
   void _onItemTapped(BuildContext context, int index) {
-    print(index);
     Provider.of<WecoordiProvider>(context, listen: false).bottomNavIndex = index;
   }
 
@@ -69,6 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 UserCredential? userCredential = await signInWithGoogle();
                 if (userCredential != null) {
                   print(userCredential);
+                  addNewUser();
                   // userCredential.additionalUserInfo.profile
                   /*
                     "email" -> "youngjoon3202@gmail.com"
@@ -76,10 +104,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     "given_name" -> "yjyj" */
                   // 로그인 성공한 경우
                   // 내 정보_로그인 페이지로 이동
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyPageHomeLogin()),
-                  );
                 } else {
                   // 로그인 실패한 경우 처리할 로직 추가
                 }
