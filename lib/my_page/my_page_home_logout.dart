@@ -68,6 +68,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 // 구글 로그인 버튼을 누를 때 signInWithGoogle() 함수 호출
                 UserCredential? userCredential = await signInWithGoogle();
                 if (userCredential != null) {
+                  print(userCredential);
+                  // userCredential.additionalUserInfo.profile
+                  /*
+                    "email" -> "youngjoon3202@gmail.com"
+                    "name" -> "yjyj (yjyj)"
+                    "given_name" -> "yjyj" */
                   // 로그인 성공한 경우
                   // 내 정보_로그인 페이지로 이동
                   Navigator.push(

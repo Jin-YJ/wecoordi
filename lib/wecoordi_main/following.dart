@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../feed/feed_main.dart';
 
+
 class Following extends StatefulWidget {
   const Following({
     Key? key,
@@ -77,7 +78,7 @@ class _FollowingState extends State<Following> {
             itemCount: 5, // 무한 스크롤을 위해 충분한 아이템 개수로 설정해주세요.
             itemBuilder: (context, index) {
               // 여기에 DB에서 받아온 피드 데이터를 표시하는 코드를 추가하면 됩니다.
-              return feedMain(); // 임시로 피드 아이템 생성하는 함수 호출
+              return FeedMain(feedImageUrl: '', height: 170, memberId: 'test', profilePhotoUrl: '', weight: 60,); // 임시로 피드 아이템 생성하는 함수 호출
             },
           ),
         ),

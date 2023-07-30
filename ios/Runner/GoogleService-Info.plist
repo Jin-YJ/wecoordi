@@ -19,16 +19,28 @@
 	<key>STORAGE_BUCKET</key>
 	<string>wecoordi.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_GCM_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:14960927041:ios:c39a400c189d0fdeb0c1c0</string>
+	<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+				<string>com.googleusercontent.apps.14960927041-ifvvscg18ivnbdifvh4kl97luf64a9b9</string>
+				</array>
+			</dict>
+		</array>
+
 </dict>
 </plist>
