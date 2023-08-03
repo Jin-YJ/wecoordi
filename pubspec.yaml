@@ -43,6 +43,11 @@ dependencies:
   share_plus: ^7.0.2
   url_launcher: ^6.1.12
   cloud_firestore: ^4.8.4
+  image_picker: ^1.0.1
+  image_cropper: ^5.0.0
+  firebase_storage: ^11.2.5
+  fluttertoast: ^8.2.2
+  bot_toast: ^4.0.4
 
 dev_dependencies:
   flutter_test:
@@ -66,3 +71,4 @@ flutter:
   uses-material-design: true
   assets: # 새로 추가한 부분
     - assets/ # assets 폴더의 모든 이미지를 불러옴
+    - assets/images/

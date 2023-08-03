@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../my_page/my_profile.dart';
+
 class wecoordiAppbar extends StatelessWidget implements PreferredSizeWidget {
   const wecoordiAppbar({
     super.key,
@@ -17,7 +19,12 @@ class wecoordiAppbar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: Icon(CupertinoIcons.person),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MyProfilePage()), // 프로필 페이지로 이동
+            );
+          },
         ),
         IconButton(
           icon: Icon(CupertinoIcons.search),
