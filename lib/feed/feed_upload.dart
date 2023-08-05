@@ -102,18 +102,27 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
 
   // 여러 이미지를 Firebase Storage에 업로드하는 함수
   Future<List<String>> _uploadImagesToFirebaseStorage(List<ImageProvider> imageProviders) async {
-    List<File> imageFiles = _getImageFilesFromProviders(imageProviders);
-    List<String> imageUrls = [];
-    for (File imageFile in imageFiles) {
-      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      Reference storageReference = FirebaseStorage.instance.ref().child('feedImages/$fileName');
-      UploadTask uploadTask = storageReference.putFile(imageFile);
-      TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
-      String downloadURL = await taskSnapshot.ref.getDownloadURL();
-      imageUrls.add(downloadURL);
-    }
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+    if(user != null) {
+      List<File> imageFiles = _getImageFilesFromProviders(imageProviders);
+      List<String> imageUrls = [];
+      for (File imageFile in imageFiles) {
+        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+        String? userId = user.email;
+        Reference storageReference = FirebaseStorage.instance.ref().child('feedImages/$userId/$fileName');
+        UploadTask uploadTask = storageReference.putFile(imageFile);
+        TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
+        String downloadURL = await taskSnapshot.ref.getDownloadURL();
+        imageUrls.add(downloadURL);
+      }
+      return imageUrls;
 
-    return imageUrls;
+    }else {
+      return [];
+    }
+    
+
   }
 
   // 이미지 파일 리스트로 변환하는 함수

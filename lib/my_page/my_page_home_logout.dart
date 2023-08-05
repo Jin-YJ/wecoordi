@@ -27,7 +27,10 @@ class _ProfilePageState extends State<ProfilePage> {
         'nickName': user.displayName,
         'Reserves': 0,
         'introMsg': '',
-        'profileImage': ''
+        'profileImage': '',
+        'userHeight' : 0.0,
+        'userWeight' : 00.0
+
         // 기타 추가할 사용자 정보 필드가 있다면 이곳에 추가 가능
       }).then((_) {
         Navigator.pushReplacement(

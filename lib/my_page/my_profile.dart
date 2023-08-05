@@ -12,8 +12,9 @@ class MyProfilePage extends StatefulWidget {
 class _MyProfilePageState extends State<MyProfilePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String? nickName = '';
-  List<String?> profilePhotos = [];
+  List<String?> feedPhotos = [];
   String uid = '';
+  String profileImage = '';
   late DocumentSnapshot userInfo;
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
           setState(() {
             uid = currentUser.uid;
             nickName = userInfo.get('nickName');
+            profileImage = userInfo.get('profileImage');
           });
         }
 
@@ -42,7 +44,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
             allImageUrls.addAll(imageUrls.map((url) => url as String?));
           }
           setState(() {
-            profilePhotos = allImageUrls;
+            feedPhotos = allImageUrls;
           });
         }
       }
@@ -74,14 +76,14 @@ class _MyProfilePageState extends State<MyProfilePage> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start, 
             children: [
               // 프로필 사진과 닉네임
               Row(
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundImage: NetworkImage('프로필_이미지_URL'), // 프로필 이미지 URL
+                    backgroundImage: profileImage != '' ? NetworkImage(profileImage) : AssetImage('assets/images/blank_profile.png') as ImageProvider, // 프로필 이미지 URL
                   ),
                   SizedBox(width: 10),
                   Text(
@@ -128,7 +130,6 @@ class _MyProfilePageState extends State<MyProfilePage> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => ProfileEditPage(
-                                uid: uid,
                               )), // 프로필 페이지로 이동
                     );
                   },
@@ -147,9 +148,9 @@ class _MyProfilePageState extends State<MyProfilePage> {
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
                 ),
-                itemCount: profilePhotos.length,
+                itemCount: feedPhotos.length,
                 itemBuilder: (context, index) {
-                  final imageUrl = profilePhotos[index];
+                  final imageUrl = feedPhotos[index];
                   if (imageUrl == null) {
                     return Container();
                   }
