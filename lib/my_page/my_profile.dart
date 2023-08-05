@@ -15,6 +15,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
   List<String?> feedPhotos = [];
   String uid = '';
   String profileImage = '';
+  String introduction = '';
   late DocumentSnapshot userInfo;
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
             uid = currentUser.uid;
             nickName = userInfo.get('nickName');
             profileImage = userInfo.get('profileImage');
+            introduction = userInfo.get('introMsg');
           });
         }
 
@@ -76,7 +78,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, 
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // 프로필 사진과 닉네임
               Row(
@@ -97,7 +99,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
               SizedBox(
                 height: 60,
                 child: Text(
-                  '자기소개글',
+                  introduction,
                   style: TextStyle(fontSize: 12),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
@@ -128,9 +130,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     // 프로필 수정 버튼을 눌렀을 때 동작할 로직 추가
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => ProfileEditPage(
-                              )), // 프로필 페이지로 이동
+                      MaterialPageRoute(builder: (context) => ProfileEditPage()), // 프로필 페이지로 이동
                     );
                   },
                   style: ElevatedButton.styleFrom(

@@ -1,15 +1,15 @@
-
 import 'dart:io';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wecoordi/my_page/my_profile.dart';
 
 class ProfileEditPage extends StatefulWidget {
-
   @override
   _ProfileEditPageState createState() => _ProfileEditPageState();
 }
@@ -26,7 +26,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   // 입력받을 닉네임과 자기소개의 초기값을 설정합니다.
   String nickName = '';
   String introduction = '';
-  
+
   //user 컬렉션 doc
   String uid = '';
 
@@ -57,7 +57,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             userWeight = userInfo.get('userWeight');
           });
         }
-
       }
     } catch (e) {
       print("Error fetching data: $e");
@@ -75,8 +74,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     User? user = _auth.currentUser;
     String downloadURL = '';
     if (user != null) {
-      Reference storageReference =
-          FirebaseStorage.instance.ref().child('profileImages/${user.email}/${DateTime.now().millisecondsSinceEpoch}');
+      Reference storageReference = FirebaseStorage.instance.ref().child('profileImages/${user.email}/${DateTime.now().millisecondsSinceEpoch}');
       try {
         if (profileImage.startsWith('http')) {
           downloadURL = profileImage;
@@ -100,48 +98,57 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           'userHeight': userHeight,
           'userWeight': userWeight,
         });
+
+        // 피드 저장 성공 시 토스트 메시지를 띄움
+        BotToast.showText(text: "프로필이 수정되었습니다.");
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MyProfilePage()),
+        );
       } catch (error) {
         print("프로필 업데이트 중 오류가 발생했습니다: $error");
       }
     }
   }
 
-
   // 갤러리에서 이미지 선택
   // 갤러리에서 이미지 선택
-Future<void> _pickImageFromGallery() async {
-  try {
-    final XFile? pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        profileImage = pickedFile.path;
-      });
+  Future<void> _pickImageFromGallery() async {
+    try {
+      final XFile? pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          profileImage = pickedFile.path;
+        });
+      }
+    } catch (e) {
+      print("데이터 가져오기 오류: $e");
     }
-  } catch (e) {
-    print("데이터 가져오기 오류: $e");
   }
-}
-
 
   ImageProvider<Object>? _getImageProvider() {
-  if (profileImage.startsWith('http')) {
-    return NetworkImage(profileImage);
-  } else if (profileImage.isNotEmpty) {
-    return FileImage(File(profileImage));
-  } else {
-    return AssetImage('assets/images/blank_profile.png');
+    if (profileImage.startsWith('http')) {
+      return NetworkImage(profileImage);
+    } else if (profileImage.isNotEmpty) {
+      return FileImage(File(profileImage));
+    } else {
+      return AssetImage('assets/images/blank_profile.png');
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('프로필 수정',),
-        actions: [ // 앱바 우측에 배치할 위젯들을 배열로 추가합니다.
+        title: Text(
+          '프로필 수정',
+        ),
+        actions: [
+          // 앱바 우측에 배치할 위젯들을 배열로 추가합니다.
           TextButton(
             onPressed: () {
-             updateProfile(profileImage, nickName , introduction, userHeight, userWeight);
+              updateProfile(profileImage, nickName, introduction, userHeight, userWeight);
             },
             child: Text(
               '완료',
@@ -161,7 +168,6 @@ Future<void> _pickImageFromGallery() async {
             SizedBox(height: 20),
             // 프로필 사진 보여주기 (동그랗게 자르기)
             GestureDetector(
-              
               onTap: () => _pickImageFromGallery(),
               child: CircleAvatar(
                 radius: 30,
@@ -253,10 +259,7 @@ Future<void> _pickImageFromGallery() async {
               ),
             ),
 
-
-
             SizedBox(height: 20),
-          
           ],
         ),
       ),
