@@ -27,7 +27,8 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
   String _selectedTPO = '결혼식';
   final FocusNode _focusNode = FocusNode();
 
-  TextEditingController _feedController = TextEditingController(); // 피드 내용을 입력받기 위한 컨트롤러
+  TextEditingController _feedController =
+      TextEditingController(); // 피드 내용을 입력받기 위한 컨트롤러
 
   @override
   void initState() {
@@ -44,16 +45,28 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
 
   // 갤러리에서 이미지 선택
   Future<void> _pickImageFromGallery() async {
-    final XFile? pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
     CroppedFile? croppedFile;
     if (pickedFile != null) {
       try {
-        croppedFile = await _imageCropper.cropImage(sourcePath: pickedFile.path, aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1), compressQuality: 100, maxWidth: 150, maxHeight: 150, uiSettings: [
-          AndroidUiSettings(toolbarTitle: '사진 자르기', toolbarColor: Colors.black, toolbarWidgetColor: Colors.white, initAspectRatio: CropAspectRatioPreset.original, lockAspectRatio: false),
-          IOSUiSettings(
-            title: '사진 자르기',
-          )
-        ]);
+        croppedFile = await _imageCropper.cropImage(
+            sourcePath: pickedFile.path,
+            aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+            compressQuality: 100,
+            maxWidth: 150,
+            maxHeight: 150,
+            uiSettings: [
+              AndroidUiSettings(
+                  toolbarTitle: '사진 자르기',
+                  toolbarColor: Colors.black,
+                  toolbarWidgetColor: Colors.white,
+                  initAspectRatio: CropAspectRatioPreset.original,
+                  lockAspectRatio: false),
+              IOSUiSettings(
+                title: '사진 자르기',
+              )
+            ]);
       } catch (error) {
         // 에러 처리
         print("사진자르기 : $error");
@@ -101,28 +114,28 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
   }
 
   // 여러 이미지를 Firebase Storage에 업로드하는 함수
-  Future<List<String>> _uploadImagesToFirebaseStorage(List<ImageProvider> imageProviders) async {
+  Future<List<String>> _uploadImagesToFirebaseStorage(
+      List<ImageProvider> imageProviders) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user = auth.currentUser;
-    if(user != null) {
+    if (user != null) {
       List<File> imageFiles = _getImageFilesFromProviders(imageProviders);
       List<String> imageUrls = [];
       for (File imageFile in imageFiles) {
         String fileName = DateTime.now().millisecondsSinceEpoch.toString();
         String? userId = user.email;
-        Reference storageReference = FirebaseStorage.instance.ref().child('feedImages/$userId/$fileName');
+        Reference storageReference = FirebaseStorage.instance
+            .ref()
+            .child('feedImages/$userId/$fileName');
         UploadTask uploadTask = storageReference.putFile(imageFile);
         TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => null);
         String downloadURL = await taskSnapshot.ref.getDownloadURL();
         imageUrls.add(downloadURL);
       }
       return imageUrls;
-
-    }else {
+    } else {
       return [];
     }
-    
-
   }
 
   // 이미지 파일 리스트로 변환하는 함수
@@ -155,7 +168,8 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
               TextButton(
                 onPressed: () {
                   Navigator.pop(context); // 다이얼로그 닫기
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ProfilePage()));
                 },
                 child: Text('로그인'),
               ),
@@ -179,7 +193,19 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
     String content = _feedController.text;
 
     // Firestore에 데이터 추가
-    FirebaseFirestore.instance.collection('feeds').add({'imageUrls': imageUrls, 'gender': gender, 'style': style, 'age': age, 'tpo': tpo, 'content': content, 'userId': user.email, 'createdAt': FieldValue.serverTimestamp(), 'openYn': 'Y'}).then((_) {
+    FirebaseFirestore.instance.collection('feeds').add({
+      'imageUrls': imageUrls,
+      'gender': gender,
+      'style': style,
+      'age': age,
+      'tpo': tpo,
+      'content': content,
+      'userId': user.email,
+      'createdAt': FieldValue.serverTimestamp(),
+      'openYn': 'Y',
+      'likes': [],
+      'reply': [Map()],
+    }).then((_) {
       // 데이터 저장 성공 시 처리할 내용
       // 예: 저장 성공 알림 띄우기 등
 
@@ -199,7 +225,8 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
   void _saveFeed() async {
     // 여러 이미지 업로드
     if (_selectedImages.isNotEmpty) {
-      List<String> imageUrls = await _uploadImagesToFirebaseStorage(_selectedImages);
+      List<String> imageUrls =
+          await _uploadImagesToFirebaseStorage(_selectedImages);
 
       // Firestore에 데이터와 이미지 URL 저장
       _saveDataToFirestore(imageUrls);
@@ -242,7 +269,8 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
         body: SingleChildScrollView(
           // 전체 화면 스크롤을 위해 SingleChildScrollView 사용
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽 정렬을 위해 crossAxisAlignment 설정
+            crossAxisAlignment:
+                CrossAxisAlignment.start, // 왼쪽 정렬을 위해 crossAxisAlignment 설정
             children: [
               SizedBox(height: 5),
               Container(
@@ -265,7 +293,8 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
                             ),
                           ),
                         ),
-                      if (_selectedImages.isEmpty || _selectedImages.length < 10)
+                      if (_selectedImages.isEmpty ||
+                          _selectedImages.length < 10)
                         Padding(
                           padding: EdgeInsets.only(right: 5),
                           child: InkWell(
@@ -300,7 +329,9 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('성별', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('성별',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
                     SizedBox(height: 5),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -316,8 +347,11 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
                                   });
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  primary: _selectedGender == gender ? Colors.blue : Colors.grey,
-                                  minimumSize: Size(gender.length * 20.0, 0), // 버튼의 width 값을 글자수에 따라 계산
+                                  primary: _selectedGender == gender
+                                      ? Colors.blue
+                                      : Colors.grey,
+                                  minimumSize: Size(gender.length * 20.0,
+                                      0), // 버튼의 width 값을 글자수에 따라 계산
                                 ),
                                 child: Text(gender),
                               ),
@@ -335,13 +369,21 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('스타일', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('스타일',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
                     SizedBox(height: 5),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          for (String style in ['미니멀', '아메카지', '스트릿', '남친룩', '여친룩'])
+                          for (String style in [
+                            '미니멀',
+                            '아메카지',
+                            '스트릿',
+                            '남친룩',
+                            '여친룩'
+                          ])
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 5),
                               child: ElevatedButton(
@@ -351,8 +393,11 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
                                   });
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  primary: _selectedStyle == style ? Colors.blue : Colors.grey,
-                                  minimumSize: Size(style.length * 20.0, 0), // 버튼의 width 값을 글자수에 따라 계산
+                                  primary: _selectedStyle == style
+                                      ? Colors.blue
+                                      : Colors.grey,
+                                  minimumSize: Size(style.length * 20.0,
+                                      0), // 버튼의 width 값을 글자수에 따라 계산
                                 ),
                                 child: Text(style),
                               ),
@@ -370,7 +415,9 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('나이', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('나이',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
                     SizedBox(height: 5),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -386,8 +433,11 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
                                   });
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  primary: _selectedAge == age ? Colors.blue : Colors.grey,
-                                  minimumSize: Size(age.length * 20.0, 0), // 버튼의 width 값을 글자수에 따라 계산
+                                  primary: _selectedAge == age
+                                      ? Colors.blue
+                                      : Colors.grey,
+                                  minimumSize: Size(age.length * 20.0,
+                                      0), // 버튼의 width 값을 글자수에 따라 계산
                                 ),
                                 child: Text(age),
                               ),
@@ -405,13 +455,22 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('TPO', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('TPO',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
                     SizedBox(height: 5),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          for (String tpo in ['결혼식', '소개팅', '데이트', '나들이', '출근룩', '데일리'])
+                          for (String tpo in [
+                            '결혼식',
+                            '소개팅',
+                            '데이트',
+                            '나들이',
+                            '출근룩',
+                            '데일리'
+                          ])
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 5),
                               child: ElevatedButton(
@@ -421,8 +480,11 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
                                   });
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  primary: _selectedTPO == tpo ? Colors.blue : Colors.grey,
-                                  minimumSize: Size(tpo.length * 20.0, 0), // 버튼의 width 값을 글자수에 따라 계산
+                                  primary: _selectedTPO == tpo
+                                      ? Colors.blue
+                                      : Colors.grey,
+                                  minimumSize: Size(tpo.length * 20.0,
+                                      0), // 버튼의 width 값을 글자수에 따라 계산
                                 ),
                                 child: Text(tpo),
                               ),
