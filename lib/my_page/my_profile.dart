@@ -27,7 +27,10 @@ class _MyProfilePageState extends State<MyProfilePage> {
     try {
       User? currentUser = _auth.currentUser;
       if (currentUser != null) {
-        userInfo = await FirebaseFirestore.instance.collection('user').doc(currentUser.uid).get();
+        userInfo = await FirebaseFirestore.instance
+            .collection('user')
+            .doc(currentUser.uid)
+            .get();
         if (userInfo.exists) {
           setState(() {
             uid = currentUser.uid;
@@ -37,13 +40,18 @@ class _MyProfilePageState extends State<MyProfilePage> {
           });
         }
 
-        QuerySnapshot userFeeds = await FirebaseFirestore.instance.collection('feeds').where('userId', isEqualTo: currentUser.email).where('openYn', isEqualTo: 'Y').get();
+        QuerySnapshot userFeeds = await FirebaseFirestore.instance
+            .collection('feeds')
+            .where('userId', isEqualTo: currentUser.email)
+            .where('openYn', isEqualTo: 'Y')
+            .get();
 
         if (userFeeds.docs.isNotEmpty) {
           List<String?> allImageUrls = [];
           for (var doc in userFeeds.docs) {
             List<dynamic> imageUrls = doc.get('imageUrls') as List<dynamic>;
-            allImageUrls.addAll(imageUrls.map((url) => url as String?));
+            // allImageUrls.addAll(imageUrls.map((url) => url as String?));
+            allImageUrls.add(imageUrls[0]);
           }
           setState(() {
             feedPhotos = allImageUrls;
@@ -62,7 +70,8 @@ class _MyProfilePageState extends State<MyProfilePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Center(child: Text('내 정보', style: TextStyle(color: Colors.black))),
+        title:
+            Center(child: Text('내 정보', style: TextStyle(color: Colors.black))),
         iconTheme: IconThemeData(color: Colors.black),
         actions: [
           IconButton(
@@ -85,7 +94,10 @@ class _MyProfilePageState extends State<MyProfilePage> {
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundImage: profileImage != '' ? NetworkImage(profileImage) : AssetImage('assets/images/blank_profile.png') as ImageProvider, // 프로필 이미지 URL
+                    backgroundImage: profileImage != ''
+                        ? NetworkImage(profileImage)
+                        : AssetImage('assets/images/blank_profile.png')
+                            as ImageProvider, // 프로필 이미지 URL
                   ),
                   SizedBox(width: 10),
                   Text(
@@ -130,7 +142,9 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     // 프로필 수정 버튼을 눌렀을 때 동작할 로직 추가
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ProfileEditPage()), // 프로필 페이지로 이동
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ProfileEditPage()), // 프로필 페이지로 이동
                     );
                   },
                   style: ElevatedButton.styleFrom(

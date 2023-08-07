@@ -49,6 +49,7 @@ dependencies:
   fluttertoast: ^8.2.2
   bot_toast: ^4.0.4
   carousel_slider: ^4.2.1
+  draggable_bottom_sheet: ^1.0.2
 
 dev_dependencies:
   flutter_test:

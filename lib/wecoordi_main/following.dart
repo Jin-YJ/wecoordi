@@ -187,11 +187,9 @@ class _FollowingState extends State<Following> {
                 return Container(); // feedSnapshot이 null인 경우 빈 컨테이너 반환
               } else {
                 return FeedMain(
-                    feedImageUrl: feedSnapshot?.docs[index]['imageUrls'],
-                    userId: feedSnapshot?.docs[index]['userId'],
-                    likes: feedSnapshot?.docs[index]['likes'],
-                    content: feedSnapshot?.docs[index]['content'],
-                    createdDate: feedSnapshot?.docs[index]['createdAt']);
+                  doc: feedSnapshot?.docs[index],
+                  userId: feedSnapshot?.docs[index]['userId'],
+                );
               }
             },
           ),
