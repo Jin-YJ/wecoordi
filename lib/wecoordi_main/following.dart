@@ -117,14 +117,16 @@ class _FollowingState extends State<Following> {
 
   ImageProvider<Object>? _getImageProvider(int index) {
     try {
-      if (followingUserProfilePhotos[index].startsWith('http')) {
-        return NetworkImage(followingUserProfilePhotos[index]);
-      } else {
-        return AssetImage('assets/images/all_profiles.png');
-      }
+        if (followingUserProfilePhotos[index].startsWith('http')) {
+          return NetworkImage(followingUserProfilePhotos[index]);
+        } else {
+          return AssetImage('assets/images/all_profiles.png');
+        }
+      
+      
     } catch (e) {
       print("Error fetching data: $e");
-      return null;
+      return  AssetImage('assets/images/all_profiles.png');
     }
   }
 
@@ -151,7 +153,7 @@ class _FollowingState extends State<Following> {
           height: 70, // 바의 높이 설정
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: followingUserIds.length,
+    itemCount: followingUserProfilePhotos.length, // 변경된 부분
             itemBuilder: (context, index) {
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10),
