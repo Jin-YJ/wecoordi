@@ -22,25 +22,33 @@ class _ProfilePageState extends State<ProfilePage> {
   void addNewUser() {
     User? user = _auth.currentUser;
     if (user != null) {
-      FirebaseFirestore.instance.collection('user').doc(user.uid).set({
-        'email': user.email,
-        'nickName': user.displayName,
-        'Reserves': 0,
-        'introMsg': '',
-        'profileImage': '',
-        'userHeight' : 0.0,
-        'userWeight' : 00.0
+  CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
 
-        // 기타 추가할 사용자 정보 필드가 있다면 이곳에 추가 가능
-      }).then((_) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MyPageHomeLogin()),
-        );
-      }).catchError((error) {
-        print("사용자 정보 추가 중 오류가 발생했습니다: $error");
-      });
-    }
+  userCollection.get().then((querySnapshot) {
+    int docCount = querySnapshot.size;
+
+    String defaultNickName = 'user$docCount'; // 닉네임 생성 로직
+
+    userCollection.doc(user.uid).set({
+      'email': user.email,
+      'nickName': defaultNickName,
+      'Reserves': 0,
+      'introMsg': '',
+      'profileImage': '',
+      'userHeight': 0.0,
+      'userWeight': 00.0,
+      // 기타 추가할 사용자 정보 필드가 있다면 이곳에 추가 가능
+    }).then((_) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MyPageHomeLogin()),
+      );
+    }).catchError((error) {
+      print("사용자 정보 추가 중 오류가 발생했습니다: $error");
+    });
+  });
+}
+
   }
 
   // botomNavIndex를 프로바이더에서 꺼내옴
