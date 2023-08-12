@@ -212,9 +212,9 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
       // 피드 저장 성공 시 토스트 메시지를 띄움
       BotToast.showText(text: "피드가 저장되었습니다.");
 
-      Navigator.pushReplacement(
+      Navigator.pop(
         context,
-        MaterialPageRoute(builder: (context) => MyProfilePage()),
+        true,
       );
     }).catchError((error) {
       // 에러 처리

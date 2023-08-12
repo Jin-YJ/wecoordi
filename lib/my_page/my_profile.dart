@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wecoordi/feed/feed_upload.dart';
+import 'package:wecoordi/my_page/my_page_home_logout.dart';
 import 'package:wecoordi/my_page/my_profile_edit.dart';
 
 class MyProfilePage extends StatefulWidget {
@@ -57,6 +58,13 @@ class _MyProfilePageState extends State<MyProfilePage> {
             feedPhotos = allImageUrls;
           });
         }
+      }else {
+        
+        Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => ProfilePage()),);
+          
+      
       }
     } catch (e) {
       print("Error fetching data: $e");
@@ -138,14 +146,19 @@ class _MyProfilePageState extends State<MyProfilePage> {
                 height: screenHeight * 0.04,
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     // 프로필 수정 버튼을 눌렀을 때 동작할 로직 추가
-                    Navigator.push(
+                    final result = await Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ProfileEditPage()), // 프로필 페이지로 이동
+                      MaterialPageRoute(builder: (context) => ProfileEditPage()), // 프로필 수정 페이지로 이동
                     );
+
+                    if (result != null && result == true) { 
+                      // 프로필 수정 화면에서 변경이 있었음을 알리는 값을 받았을 경우 상태 갱신
+                      setState(() {
+                        fetchUserDataAndFeeds();
+                      });
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     primary: Colors.white.withOpacity(0.9),
@@ -184,12 +197,19 @@ class _MyProfilePageState extends State<MyProfilePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           // 플로팅 버튼을 눌렀을 때 동작할 로직 추가
-          Navigator.push(
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => FeedUploadPage()),
           );
+
+          if (result != null && result == true) { 
+            // 프로필 수정 화면에서 변경이 있었음을 알리는 값을 받았을 경우 상태 갱신
+            setState(() {
+              fetchUserDataAndFeeds();
+            });
+          }
         },
         mini: true,
         child: Icon(Icons.add),

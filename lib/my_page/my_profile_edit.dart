@@ -7,9 +7,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:wecoordi/my_page/my_profile.dart';
 
 class ProfileEditPage extends StatefulWidget {
+  
   @override
   _ProfileEditPageState createState() => _ProfileEditPageState();
 }
@@ -17,15 +17,13 @@ class ProfileEditPage extends StatefulWidget {
 class _ProfileEditPageState extends State<ProfileEditPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  TextEditingController nickNameController = TextEditingController();
+  TextEditingController introductionController = TextEditingController();
+  TextEditingController userHeightController = TextEditingController();
+  TextEditingController userWeightController = TextEditingController();
+
   // 프로필 사진 URL 변수를 선언하고 기본 이미지 URL을 할당합니다.
   String profileImage = '';
-  // 선택된 키와 몸무게의 초기값을 설정합니다.
-  double userHeight = 0.0;
-  double userWeight = 0.0;
-
-  // 입력받을 닉네임과 자기소개의 초기값을 설정합니다.
-  String nickName = '';
-  String introduction = '';
 
   //user 컬렉션 doc
   String uid = '';
@@ -47,29 +45,33 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     try {
       User? currentUser = _auth.currentUser;
       if (currentUser != null) {
-        userInfo = await FirebaseFirestore.instance.collection('user').doc(currentUser.uid).get();
-        if (userInfo.exists) {
-          setState(() {
-            uid = currentUser.uid;
-            nickName = userInfo.get('nickName');
-            profileImage = userInfo.get('profileImage');
-            userHeight = userInfo.get('userHeight');
-            userWeight = userInfo.get('userWeight');
-          });
+        DocumentSnapshot fetchedUserInfo = await FirebaseFirestore.instance.collection('user').doc(currentUser.uid).get();
+        if (fetchedUserInfo.exists) {
+          Map<String, dynamic>? data = fetchedUserInfo.data() as Map<String, dynamic>?;
+          print("가져온 데이터: $data");
+          if (data != null) {
+            setState(() {
+              uid = currentUser.uid;
+              nickNameController.text = data['nickName'] ?? '';
+              profileImage = data['profileImage'] ?? '';
+              userHeightController.text = (data['userHeight'] ?? 0).toString();
+              userWeightController.text = (data['userWeight'] ?? 0).toString();
+              introductionController.text = data['introMsg'] ?? '';
+            });
+          }
         }
       }
     } catch (e) {
       print("Error fetching data: $e");
     }
   }
+
+
   //유저데이터 업데이트
 
   Future<void> updateProfile(
     String profileImage,
-    String nickName,
-    String introduction,
-    double userHeight,
-    double userWeight,
+
   ) async {
     User? user = _auth.currentUser;
     String downloadURL = '';
@@ -87,24 +89,21 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         print("프로필 사진 업로드 오류: $e");
       }
 
-      if (nickName == '') {
-        nickName = this.nickName;
-      }
       try {
         await FirebaseFirestore.instance.collection('user').doc(user.uid).update({
           'profileImage': downloadURL,
-          'introMsg': introduction,
-          'nickName': nickName,
-          'userHeight': userHeight,
-          'userWeight': userWeight,
+          'introMsg': introductionController.text,
+          'nickName': nickNameController.text,
+          'userHeight': userHeightController.text,
+          'userWeight': userWeightController.text,
         });
 
         // 피드 저장 성공 시 토스트 메시지를 띄움
         BotToast.showText(text: "프로필이 수정되었습니다.");
 
-        Navigator.pushReplacement(
+        Navigator.pop(
           context,
-          MaterialPageRoute(builder: (context) => MyProfilePage()),
+          true
         );
       } catch (error) {
         print("프로필 업데이트 중 오류가 발생했습니다: $error");
@@ -139,6 +138,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("위젯 재구성");
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -148,7 +148,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           // 앱바 우측에 배치할 위젯들을 배열로 추가합니다.
           TextButton(
             onPressed: () {
-              updateProfile(profileImage, nickName, introduction, userHeight, userWeight);
+              updateProfile(profileImage);
             },
             child: Text(
               '완료',
@@ -179,13 +179,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextFormField(
-                initialValue: nickName,
-                onChanged: (value) {
-                  // 닉네임이 변경되었을 때 동작할 로직 추가
-                  setState(() {
-                    nickName = value;
-                  });
-                },
+                controller: nickNameController,
                 decoration: InputDecoration(
                   labelText: '닉네임',
                 ),
@@ -196,13 +190,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextFormField(
-                initialValue: introduction,
-                onChanged: (value) {
-                  // 자기소개가 변경되었을 때 동작할 로직 추가
-                  setState(() {
-                    introduction = value;
-                  });
-                },
+                controller: introductionController,
                 decoration: InputDecoration(
                   labelText: '자기소개',
                 ),
@@ -214,17 +202,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextFormField(
-                initialValue: userHeight.toString(),
-                onChanged: (value) {
-                  // 입력값이 숫자인지 확인
-                  double? parsedValue = double.tryParse(value);
-                  if (parsedValue != null) {
-                    // 키가 변경되었을 때 동작할 로직 추가
-                    setState(() {
-                      userHeight = double.parse(value);
-                    });
-                  }
-                },
+                controller: userHeightController,
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
                   labelText: '키',
@@ -238,21 +216,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextFormField(
-                initialValue: userWeight.toString(),
-                onChanged: (value) {
-                  // 입력값이 숫자인지 확인
-                  double? parsedValue = double.tryParse(value);
-                  if (parsedValue != null) {
-                    // 숫자인 경우에만 몸무게 변경
-                    setState(() {
-                      userWeight = parsedValue;
-                    });
-                  } else {
-                    // 숫자가 아닌 경우 또는 빈 문자열인 경우 이전 값으로 유지
-                  }
-                },
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(
+                  controller: userWeightController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(
                   labelText: '몸무게',
                   suffix: Text('kg'),
                 ),
