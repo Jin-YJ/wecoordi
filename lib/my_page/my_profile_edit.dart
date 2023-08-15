@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileEditPage extends StatefulWidget {
-  
   @override
   _ProfileEditPageState createState() => _ProfileEditPageState();
 }
@@ -32,6 +31,13 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   late DocumentSnapshot userInfo;
 
   late ImagePicker _imagePicker;
+
+  //닉네임 중복여부
+  bool isNicknameDuplicate = false;
+
+  //닉네임 중복메세지
+  String nicknameDuplicateMessage = '';
+
   @override
   void initState() {
     super.initState();
@@ -45,9 +51,13 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     try {
       User? currentUser = _auth.currentUser;
       if (currentUser != null) {
-        DocumentSnapshot fetchedUserInfo = await FirebaseFirestore.instance.collection('user').doc(currentUser.uid).get();
+        DocumentSnapshot fetchedUserInfo = await FirebaseFirestore.instance
+            .collection('user')
+            .doc(currentUser.uid)
+            .get();
         if (fetchedUserInfo.exists) {
-          Map<String, dynamic>? data = fetchedUserInfo.data() as Map<String, dynamic>?;
+          Map<String, dynamic>? data =
+              fetchedUserInfo.data() as Map<String, dynamic>?;
           print("가져온 데이터: $data");
           if (data != null) {
             setState(() {
@@ -66,17 +76,16 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     }
   }
 
-
   //유저데이터 업데이트
 
   Future<void> updateProfile(
     String profileImage,
-
   ) async {
     User? user = _auth.currentUser;
     String downloadURL = '';
     if (user != null) {
-      Reference storageReference = FirebaseStorage.instance.ref().child('profileImages/${user.email}/${DateTime.now().millisecondsSinceEpoch}');
+      Reference storageReference = FirebaseStorage.instance.ref().child(
+          'profileImages/${user.email}/${DateTime.now().millisecondsSinceEpoch}');
       try {
         if (profileImage.startsWith('http')) {
           downloadURL = profileImage;
@@ -89,8 +98,18 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         print("프로필 사진 업로드 오류: $e");
       }
 
+      if (isNicknameDuplicate) {
+        setState(() {
+          nicknameDuplicateMessage = '닉네임이 중복되어 프로필을 수정할 수 없습니다.';
+        });
+        return;
+      }
+
       try {
-        await FirebaseFirestore.instance.collection('user').doc(user.uid).update({
+        await FirebaseFirestore.instance
+            .collection('user')
+            .doc(user.uid)
+            .update({
           'profileImage': downloadURL,
           'introMsg': introductionController.text,
           'nickName': nickNameController.text,
@@ -101,10 +120,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         // 피드 저장 성공 시 토스트 메시지를 띄움
         BotToast.showText(text: "프로필이 수정되었습니다.");
 
-        Navigator.pop(
-          context,
-          true
-        );
+        Navigator.pop(context, true);
       } catch (error) {
         print("프로필 업데이트 중 오류가 발생했습니다: $error");
       }
@@ -112,10 +128,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   }
 
   // 갤러리에서 이미지 선택
-  // 갤러리에서 이미지 선택
   Future<void> _pickImageFromGallery() async {
     try {
-      final XFile? pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
+      final XFile? pickedFile =
+          await _imagePicker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         setState(() {
           profileImage = pickedFile.path;
@@ -124,6 +140,23 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     } catch (e) {
       print("데이터 가져오기 오류: $e");
     }
+  }
+
+  //닉네임체크
+  Future<void> checkNickName(nickName) async {
+    QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('user')
+        .where('nickName', isEqualTo: nickName)
+        .get();
+
+    setState(() {
+      if (userSnapshot.size > 0) {
+        isNicknameDuplicate = true;
+        nickNameController = nickName;
+      } else {
+        isNicknameDuplicate = false;
+      }
+    });
   }
 
   ImageProvider<Object>? _getImageProvider() {
@@ -180,8 +213,20 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextFormField(
                 controller: nickNameController,
+                onChanged: (value) {
+                  checkNickName(value);
+                  // 닉네임이 변경되었을 때 동작할 로직 추가
+                },
+                validator: (value) {
+                  if (isNicknameDuplicate) {
+                    return nicknameDuplicateMessage;
+                  }
+                  return null;
+                },
                 decoration: InputDecoration(
                   labelText: '닉네임',
+                  errorText:
+                      isNicknameDuplicate ? nicknameDuplicateMessage : null,
                 ),
               ),
             ),
@@ -216,9 +261,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: TextFormField(
-                  controller: userWeightController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: InputDecoration(
+                controller: userWeightController,
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(
                   labelText: '몸무게',
                   suffix: Text('kg'),
                 ),

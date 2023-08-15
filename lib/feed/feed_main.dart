@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -30,7 +29,7 @@ class _FeedMainState extends State<FeedMain> {
   List<dynamic> reply = [];
 
   // TextEditingController를 생성합니다.
-final TextEditingController _replyController = TextEditingController();
+  final TextEditingController _replyController = TextEditingController();
 
   @override
   void initState() {
@@ -127,17 +126,18 @@ final TextEditingController _replyController = TextEditingController();
 
   //댓글을 저장
   Map<String, dynamic> saveReply(String replyText) {
-    DocumentReference feedRef = FirebaseFirestore.instance.collection('feeds').doc(widget.doc?.id);
+    DocumentReference feedRef =
+        FirebaseFirestore.instance.collection('feeds').doc(widget.doc?.id);
 
     // reply 배열에 추가할 데이터를 생성합니다.
     Map<String, dynamic> replyData = {
-      'userId' : userData['email'],
-      'replyText' : replyText,
-      'createdDate' : Timestamp.now(), 
+      'userId': userData['email'],
+      'replyText': replyText,
+      'createdDate': Timestamp.now(),
     };
 
     feedRef.update({
-      'reply' : FieldValue.arrayUnion([replyData])
+      'reply': FieldValue.arrayUnion([replyData])
     });
     // 댓글 등록 후 텍스트필드 초기화
     _replyController.clear();
@@ -198,148 +198,163 @@ final TextEditingController _replyController = TextEditingController();
 
   //댓글 닉네임 가져오는 부분
   Future<Map<String, String>> getNickNamesForEmails(List emails) async {
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final int batchSize = 10;  // Firestore의 제한값
-  final Map<String, String> nickNames = {};
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final int batchSize = 10; // Firestore의 제한값
+    final Map<String, String> nickNames = {};
 
-  for (int i = 0; i < emails.length; i += batchSize) {
-    final endRange = (i + batchSize > emails.length) ? emails.length : i + batchSize;
-    final currentBatch = emails.sublist(i, endRange);
+    for (int i = 0; i < emails.length; i += batchSize) {
+      final endRange =
+          (i + batchSize > emails.length) ? emails.length : i + batchSize;
+      final currentBatch = emails.sublist(i, endRange);
 
-    QuerySnapshot usersSnapshot = await firestore.collection('user').where('email', whereIn: currentBatch).get();
+      QuerySnapshot usersSnapshot = await firestore
+          .collection('user')
+          .where('email', whereIn: currentBatch)
+          .get();
 
-    for (var doc in usersSnapshot.docs) {
-      final data = doc.data() as Map<String, dynamic>;
-      nickNames[data['email'] ?? ""] = data['nickName'] ?? doc.id;
+      for (var doc in usersSnapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        nickNames[data['email'] ?? ""] = data['nickName'] ?? doc.id;
+      }
     }
 
+    return nickNames;
   }
-  
-  return nickNames;
-
-}
-
 
   Future<void> _showReplyModal(Map<String, String> nicknames) async {
-  // 댓글이 없을 경우 빈 댓글 목록을 생성합니다.
-  if (reply.isEmpty || reply[0]['replyText'] == null || reply[0]['replyText'] == '') {
-    reply = [];
-  }
+    // 댓글이 없을 경우 빈 댓글 목록을 생성합니다.
+    if (reply.isEmpty ||
+        reply[0]['replyText'] == null ||
+        reply[0]['replyText'] == '') {
+      reply = [];
+    }
 
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    builder: (context) {
-      return StatefulBuilder(  // 여기서 StatefulBuilder를 추가합니다.
-      builder: (BuildContext context, StateSetter setStateModal) {  // StateSetter를 사용하여 상태를 설정합니다.
-        return DraggableScrollableSheet(
-          initialChildSize: 0.95,
-          minChildSize: 0.2,
-          maxChildSize: 1.0,
-          builder: (BuildContext context, ScrollController scrollController) {
-            return Container(
-              color: Colors.white,
-              child: Column(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 5,
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(5),
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(// 여기서 StatefulBuilder를 추가합니다.
+            builder: (BuildContext context, StateSetter setStateModal) {
+          // StateSetter를 사용하여 상태를 설정합니다.
+          return DraggableScrollableSheet(
+            initialChildSize: 0.95,
+            minChildSize: 0.2,
+            maxChildSize: 1.0,
+            builder: (BuildContext context, ScrollController scrollController) {
+              return Container(
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 5,
+                      margin: EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: Column(
-                        children: [
-                          // 댓글 목록을 추가합니다.
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: reply.length,
-                            itemBuilder: (context, index) {
-                              String comment = reply[index]['replyText'];
-                              String userEmail = reply[index]['userId'];
-                              String? commenter = nicknames[userEmail];
+                    Expanded(
+                      child: SingleChildScrollView(
+                        controller: scrollController,
+                        child: Column(
+                          children: [
+                            // 댓글 목록을 추가합니다.
+                            ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: reply.length,
+                              itemBuilder: (context, index) {
+                                String comment = reply[index]['replyText'];
+                                String userEmail = reply[index]['userId'];
+                                String? commenter = nicknames[userEmail];
 
-                              return FutureBuilder<String>(
-                                future: getReplyProfileImage(userEmail),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    // 프로필 이미지 가져오는 중
-                                    return ListTile(
-                                      leading: CircleAvatar(
-                                        backgroundImage: AssetImage('assets/images/all_profiles.png'),
+                                return FutureBuilder<String>(
+                                  future: getReplyProfileImage(userEmail),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      // 프로필 이미지 가져오는 중
+                                      return ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundImage: AssetImage(
+                                              'assets/images/all_profiles.png'),
+                                        ),
+                                        title: Text(commenter!),
+                                        subtitle: Text(comment),
+                                      );
+                                    } else if (snapshot.hasError ||
+                                        !snapshot.hasData) {
+                                      // 에러 처리 또는 데이터가 없는 경우
+                                      return ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundImage: AssetImage(
+                                              'assets/images/all_profiles.png'),
+                                        ),
+                                        title: Text(commenter!),
+                                        subtitle: Text(comment),
+                                      );
+                                    } else {
+                                      // 프로필 이미지 가져오기 성공
+                                      String profileImageUrl = snapshot.data!;
+                                      return ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundImage:
+                                              NetworkImage(profileImageUrl),
+                                        ),
+                                        title: Text(commenter!),
+                                        subtitle: Text(comment),
+                                      );
+                                    }
+                                  },
+                                );
+                              },
+                            ),
+                            // 댓글 입력 폼을 추가합니다.
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: TextFormField(
+                                      controller: _replyController,
+                                      decoration: InputDecoration(
+                                        hintText: '댓글을 입력하세요...',
+                                        border: UnderlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.grey),
+                                        ),
+                                        focusedBorder: UnderlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.grey),
+                                        ),
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.grey),
+                                        ),
                                       ),
-                                      title: Text(commenter!),
-                                      subtitle: Text(comment),
-                                    );
-                                  } else if (snapshot.hasError || !snapshot.hasData) {
-                                    // 에러 처리 또는 데이터가 없는 경우
-                                    return ListTile(
-                                      leading: CircleAvatar(
-                                        backgroundImage: AssetImage('assets/images/all_profiles.png'),
-                                      ),
-                                      title: Text(commenter!),
-                                      subtitle: Text(comment),
-                                    );
-                                  } else {
-                                    // 프로필 이미지 가져오기 성공
-                                    String profileImageUrl = snapshot.data!;
-                                    return ListTile(
-                                      leading: CircleAvatar(
-                                        backgroundImage: NetworkImage(profileImageUrl),
-                                      ),
-                                      title: Text(commenter!),
-                                      subtitle: Text(comment),
-                                    );
-                                  }
-                                },
-                              );
-                            },
-                          ),
-                          // 댓글 입력 폼을 추가합니다.
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: TextFormField(
-                                    controller: _replyController,
-                                    decoration: InputDecoration(
-                                      hintText: '댓글을 입력하세요...',
-                                      border: UnderlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.grey),
-                                      ),
-                                      focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.grey),
-                                      ),
-                                      enabledBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.grey),
-                                      ),
+                                      // 댓글을 입력받는 로직을 추가합니다.
+                                      // onSaved 등의 적절한 핸들러를 사용하여 댓글을 저장하거나 처리합니다.
                                     ),
-                                    // 댓글을 입력받는 로직을 추가합니다.
-                                    // onSaved 등의 적절한 핸들러를 사용하여 댓글을 저장하거나 처리합니다.
                                   ),
                                 ),
-                              ),
-                              TextButton(
-                                onPressed: () async {
-                                  print(_replyController.text);
-                                  // ignore: unnecessary_null_comparison
-                                  if (_replyController.text == null || _replyController.text.trim() == '') {
-                                    // `ScaffoldMessenger`를 사용하여 `SnackBar` 표시
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('댓글을 입력하세요.'),
-                                      ),
-                                    );
-                                  } else {
-                                      Map<String, dynamic>? savedReply = await saveReply(_replyController.text);
-      
+                                TextButton(
+                                  onPressed: () async {
+                                    print(_replyController.text);
+                                    // ignore: unnecessary_null_comparison
+                                    if (_replyController.text == null ||
+                                        _replyController.text.trim() == '') {
+                                      // `ScaffoldMessenger`를 사용하여 `SnackBar` 표시
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text('댓글을 입력하세요.'),
+                                        ),
+                                      );
+                                    } else {
+                                      Map<String, dynamic>? savedReply =
+                                          await saveReply(
+                                              _replyController.text);
+
                                       if (savedReply != null) {
                                         setStateModal(() {
                                           reply.add(savedReply);
@@ -347,27 +362,25 @@ final TextEditingController _replyController = TextEditingController();
                                       } else {
                                         // 에러 처리 로직 (예: 사용자에게 알림 표시)
                                       }
-                                  }
-                                },
-                                child: Text('입력'),
-                              )
-
-                            ],
-                          ),
-                        ],
+                                    }
+                                  },
+                                  child: Text('입력'),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      });
-    },
-  );
-}
-
+                  ],
+                ),
+              );
+            },
+          );
+        });
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -505,7 +518,8 @@ final TextEditingController _replyController = TextEditingController();
                   List userEmails = reply.map((r) => r['userId']).toList();
 
                   // 이메일로 닉네임을 가져옵니다.
-                  Map<String, String> nicknames = await getNickNamesForEmails(userEmails);
+                  Map<String, String> nicknames =
+                      await getNickNamesForEmails(userEmails);
 
                   // 댓글 모달을 호출하고, 닉네임 정보를 전달합니다.
                   _showReplyModal(nicknames);
