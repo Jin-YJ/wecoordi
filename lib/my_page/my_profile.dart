@@ -58,13 +58,11 @@ class _MyProfilePageState extends State<MyProfilePage> {
             feedPhotos = allImageUrls;
           });
         }
-      }else {
-        
+      } else {
         Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => ProfilePage()),);
-          
-      
+          context,
+          MaterialPageRoute(builder: (context) => ProfilePage()),
+        );
       }
     } catch (e) {
       print("Error fetching data: $e");
@@ -150,10 +148,12 @@ class _MyProfilePageState extends State<MyProfilePage> {
                     // 프로필 수정 버튼을 눌렀을 때 동작할 로직 추가
                     final result = await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ProfileEditPage()), // 프로필 수정 페이지로 이동
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              ProfileEditPage()), // 프로필 수정 페이지로 이동
                     );
 
-                    if (result != null && result == true) { 
+                    if (result != null && result == true) {
                       // 프로필 수정 화면에서 변경이 있었음을 알리는 값을 받았을 경우 상태 갱신
                       setState(() {
                         fetchUserDataAndFeeds();
@@ -204,7 +204,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
             MaterialPageRoute(builder: (context) => FeedUploadPage()),
           );
 
-          if (result != null && result == true) { 
+          if (result != null && result == true) {
             // 프로필 수정 화면에서 변경이 있었음을 알리는 값을 받았을 경우 상태 갱신
             setState(() {
               fetchUserDataAndFeeds();

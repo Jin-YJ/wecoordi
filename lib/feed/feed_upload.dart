@@ -8,7 +8,6 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wecoordi/my_page/my_page_home_logout.dart';
-import 'package:wecoordi/my_page/my_profile.dart';
 
 class FeedUploadPage extends StatefulWidget {
   @override
