@@ -15,7 +15,6 @@ class _MyPageHomeLogin extends State<MyPageHomeLogin> {
   }
 
   void _onItemTapped(BuildContext context, int index) {
-    print(index);
     Provider.of<WecoordiProvider>(context, listen: false).bottomNavIndex = index;
   }
 

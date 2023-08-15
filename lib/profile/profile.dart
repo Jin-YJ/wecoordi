@@ -5,12 +5,18 @@ import 'package:wecoordi/feed/feed_upload.dart';
 import 'package:wecoordi/my_page/my_page_home_logout.dart';
 import 'package:wecoordi/my_page/my_profile_edit.dart';
 
-class MyProfilePage extends StatefulWidget {
+class ProfilePage extends StatefulWidget {
+
+  final String userId; // doc 코드를 저장할 변수
+
+  ProfilePage({
+    required this.userId,
+  });
   @override
-  State<MyProfilePage> createState() => _MyProfilePageState();
+  State<ProfilePage> createState() => ProfilePageState();
 }
 
-class _MyProfilePageState extends State<MyProfilePage> {
+class ProfilePageState extends State<ProfilePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String? nickName = '';
   List<String?> feedPhotos = [];
@@ -61,7 +67,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
       } else {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => ProfilePage()),
+          MaterialPageRoute(builder: (context) => MyProfilePageLogout()),
         );
       }
     } catch (e) {

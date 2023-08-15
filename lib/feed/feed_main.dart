@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'feed_detail.dart';
+import '../profile/profile.dart';
 
 class FeedMain extends StatefulWidget {
   final String userId;
@@ -403,8 +403,8 @@ class _FeedMainState extends State<FeedMain> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => FeedDetail(
-                          doc: widget.doc,
+                        builder: (context) => ProfilePage(
+                        userId: userData['email'],
                         ),
                       ),
                     );
@@ -472,7 +472,7 @@ class _FeedMainState extends State<FeedMain> {
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: NetworkImage(feedImageUrl[index]),
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fitHeight,
                         ),
                       ),
                     );

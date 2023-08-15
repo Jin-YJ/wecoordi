@@ -9,12 +9,12 @@ import '../wecoordi_provider/wecoordi_provider.dart';
 import 'my_page_home_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ProfilePage extends StatefulWidget {
+class MyProfilePageLogout extends StatefulWidget {
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<MyProfilePageLogout> createState() => _MyProfilePageLogout();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _MyProfilePageLogout extends State<MyProfilePageLogout> {
   //파이어베이스의 인스턴스 가져옴
   final FirebaseAuth _auth = FirebaseAuth.instance;
 

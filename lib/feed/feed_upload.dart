@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:wecoordi/my_page/my_page_home_logout.dart';
+
+import '../my_page/my_page_home_logout.dart';
 
 class FeedUploadPage extends StatefulWidget {
   @override
@@ -168,7 +169,8 @@ class _FeedUploadPageState extends State<FeedUploadPage> {
                 onPressed: () {
                   Navigator.pop(context); // 다이얼로그 닫기
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ProfilePage()));
+                      MaterialPageRoute(builder: (context) => MyProfilePageLogout(
+                      )));
                 },
                 child: Text('로그인'),
               ),

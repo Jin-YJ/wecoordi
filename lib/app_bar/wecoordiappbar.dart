@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:wecoordi/wecoordi_provider/wecoordi_provider.dart';
 
-import '../my_page/my_profile.dart';
+import '../profile/profile.dart';
 
 class wecoordiAppbar extends StatelessWidget implements PreferredSizeWidget {
   const wecoordiAppbar({
@@ -15,6 +17,8 @@ class wecoordiAppbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+      String userId = Provider.of<WecoordiProvider>(context).userId; // 프로바이더에서 _userId 가져오기
+
     return AppBar(
       actions: [
         IconButton(
@@ -22,7 +26,7 @@ class wecoordiAppbar extends StatelessWidget implements PreferredSizeWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MyProfilePage()), // 프로필 페이지로 이동
+              MaterialPageRoute(builder: (context) => ProfilePage(userId: userId,)), // 프로필 페이지로 이동
             );
           },
         ),

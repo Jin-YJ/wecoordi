@@ -153,7 +153,7 @@ class _FollowingState extends State<Following> {
           height: 70, // 바의 높이 설정
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-    itemCount: followingUserProfilePhotos.length, // 변경된 부분
+            itemCount: followingUserProfilePhotos.length, // 변경된 부분
             itemBuilder: (context, index) {
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10),
