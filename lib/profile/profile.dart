@@ -5,8 +5,10 @@ import 'package:wecoordi/feed/feed_upload.dart';
 import 'package:wecoordi/my_page/my_page_home_logout.dart';
 import 'package:wecoordi/my_page/my_profile_edit.dart';
 
-class ProfilePage extends StatefulWidget {
+import '../product/product_management.dart';
 
+// 프로필 페이지, 피드 클릭시, 혹은 우측 상단 프로필 클릭시 이동하는 페이지,
+class ProfilePage extends StatefulWidget {
   final String userId; // doc 코드를 저장할 변수
 
   ProfilePage({
@@ -18,12 +20,16 @@ class ProfilePage extends StatefulWidget {
 
 class ProfilePageState extends State<ProfilePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  //MyProfile인지의 여부
+  bool myProfileYn = false;
+
   String? nickName = '';
   List<String?> feedPhotos = [];
   String uid = '';
   String profileImage = '';
   String introduction = '';
-  late DocumentSnapshot userInfo;
+  late final screenHeight;
+  Map<String, dynamic> userData = Map();
   @override
   void initState() {
     super.initState();
@@ -33,23 +39,26 @@ class ProfilePageState extends State<ProfilePage> {
   Future<void> fetchUserDataAndFeeds() async {
     try {
       User? currentUser = _auth.currentUser;
-      if (currentUser != null) {
-        userInfo = await FirebaseFirestore.instance
-            .collection('user')
-            .doc(currentUser.uid)
-            .get();
-        if (userInfo.exists) {
-          setState(() {
-            uid = currentUser.uid;
-            nickName = userInfo.get('nickName');
-            profileImage = userInfo.get('profileImage');
-            introduction = userInfo.get('introMsg');
-          });
-        }
+      if (currentUser?.email == widget.userId) {
+        myProfileYn = true;
+      } else {
+        myProfileYn = false;
+      }
+      QuerySnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('user')
+          .where('email', isEqualTo: widget.userId)
+          .get();
+      userData = userSnapshot.docs[0].data() as Map<String, dynamic>;
+      if (userSnapshot.size > 0) {
+        setState(() {
+          nickName = userData['nickName'];
+          profileImage = userData['profileImage'];
+          introduction = userData['introMsg'];
+        });
 
         QuerySnapshot userFeeds = await FirebaseFirestore.instance
             .collection('feeds')
-            .where('userId', isEqualTo: currentUser.email)
+            .where('userId', isEqualTo: widget.userId)
             .where('openYn', isEqualTo: 'Y')
             .get();
 
@@ -75,15 +84,99 @@ class ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  List<Widget> _myProfileButtonWidget() {
+    return [
+      Expanded(
+        child: SizedBox(
+          height: 20,
+          child: ElevatedButton(
+            onPressed: () async {
+              // 프로필 수정 버튼을 눌렀을 때 동작할 로직 추가
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ProfileEditPage()), // 프로필 수정 페이지로 이동
+              );
+
+              if (result != null && result == true) {
+                // 프로필 수정 화면에서 변경이 있었음을 알리는 값을 받았을 경우 상태 갱신
+                setState(() {
+                  fetchUserDataAndFeeds();
+                });
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              primary: Colors.white.withOpacity(0.9),
+            ),
+            child: Text('프로필 수정', style: TextStyle(color: Colors.black)),
+          ),
+        ),
+      ),
+      SizedBox(width: 10), // 프로필 수정 버튼과 상품 관리 버튼 사이의 간격
+      // 상품 관리 버튼
+      Expanded(
+        child: SizedBox(
+          height: 20,
+          child: ElevatedButton(
+            onPressed: () {
+              // 상품 관리 버튼을 눌렀을 때 동작할 로직 추가
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProductManagement()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              primary: Colors.white.withOpacity(0.9),
+            ),
+            child: Text('상품 관리', style: TextStyle(color: Colors.black)),
+          ),
+        ),
+      ),
+    ];
+  }
+
+  List<Widget> _anotherProfileButtonWidget() {
+    return [
+      Expanded(
+        child: SizedBox(
+          height: 20,
+          child: ElevatedButton(
+            onPressed: () async {
+              // 팔로우 버튼을 눌렀을 때 동작할 로직 추가
+            },
+            style: ElevatedButton.styleFrom(
+              primary: Colors.white.withOpacity(0.9),
+            ),
+            child: Text('팔로우', style: TextStyle(color: Colors.black)),
+          ),
+        ),
+      ),
+      SizedBox(width: 10), // 팔로우 버튼과 상품 보기 버튼 사이의 간격
+      // 상품 관리 버튼
+      Expanded(
+        child: SizedBox(
+          height: 20,
+          child: ElevatedButton(
+            onPressed: () {
+              // 상품 보기 버튼을 눌렀을 때 동작할 로직 추가
+            },
+            style: ElevatedButton.styleFrom(
+              primary: Colors.white.withOpacity(0.9),
+            ),
+            child: Text('상품 보기', style: TextStyle(color: Colors.black)),
+          ),
+        ),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title:
-            Center(child: Text('내 정보', style: TextStyle(color: Colors.black))),
+        title: Center(
+            child: Text(nickName!, style: TextStyle(color: Colors.black))),
         iconTheme: IconThemeData(color: Colors.black),
         actions: [
           IconButton(
@@ -146,32 +239,10 @@ class ProfilePageState extends State<ProfilePage> {
               ]),
               SizedBox(height: 10),
               // 프로필 수정 버튼
-              SizedBox(
-                height: screenHeight * 0.04,
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    // 프로필 수정 버튼을 눌렀을 때 동작할 로직 추가
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              ProfileEditPage()), // 프로필 수정 페이지로 이동
-                    );
-
-                    if (result != null && result == true) {
-                      // 프로필 수정 화면에서 변경이 있었음을 알리는 값을 받았을 경우 상태 갱신
-                      setState(() {
-                        fetchUserDataAndFeeds();
-                      });
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.white.withOpacity(0.9),
-                  ),
-                  child: Text('프로필 수정', style: TextStyle(color: Colors.black)),
-                ),
-              ),
+              Row(
+                  children: myProfileYn
+                      ? _myProfileButtonWidget()
+                      : _anotherProfileButtonWidget()),
               SizedBox(height: 20),
               // 바둑판 모양으로 사진 띄우기
               GridView.builder(

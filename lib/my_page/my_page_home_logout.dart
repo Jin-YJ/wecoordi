@@ -20,44 +20,45 @@ class _MyProfilePageLogout extends State<MyProfilePageLogout> {
 
   // Firestore에 새로운 사용자 정보 추가
   void addNewUser() {
-  User? user = _auth.currentUser;
-  if (user != null) {
-    CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
+    User? user = _auth.currentUser;
+    if (user != null) {
+      CollectionReference userCollection =
+          FirebaseFirestore.instance.collection('user');
 
-    // 해당 사용자의 UID를 가진 문서 참조 가져오기
-    DocumentReference userDocRef = userCollection.doc(user.uid);
+      // 해당 사용자의 UID를 가진 문서 참조 가져오기
+      DocumentReference userDocRef = userCollection.doc(user.uid);
 
-    userDocRef.get().then((docSnapshot) {
-      if (!docSnapshot.exists) { // 문서가 없으면 새로운 사용자 정보 추가
+      userDocRef.get().then((docSnapshot) {
+        if (!docSnapshot.exists) {
+          // 문서가 없으면 새로운 사용자 정보 추가
 
-        userCollection.get().then((querySnapshot) {
-          int docCount = querySnapshot.size;
-          String defaultNickName = 'user$docCount'; // 닉네임 생성 로직
-
-          userDocRef.set({
-            'email': user.email,
-            'nickName': defaultNickName,
-            'Reserves': 0,
-            'introMsg': '',
-            'profileImage': '',
-            'userHeight': 0.0,
-            'userWeight': 00.0,
-            // 기타 추가할 사용자 정보 필드가 있다면 이곳에 추가 가능
-          }).then((_) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => MyPageHomeLogin()),
-            );
-          }).catchError((error) {
-            print("사용자 정보 추가 중 오류가 발생했습니다: $error");
+          userCollection.get().then((querySnapshot) {
+            int docCount = querySnapshot.size;
+            String defaultNickName = 'user$docCount'; // 닉네임 생성 로직
+            Provider.of<WecoordiProvider>(context, listen: false).userId =
+                user.email!;
+            userDocRef.set({
+              'email': user.email,
+              'nickName': defaultNickName,
+              'Reserves': 0,
+              'introMsg': '',
+              'profileImage': '',
+              'userHeight': 0.0,
+              'userWeight': 00.0,
+              // 기타 추가할 사용자 정보 필드가 있다면 이곳에 추가 가능
+            }).then((_) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => MyPageHomeLogin()),
+              );
+            }).catchError((error) {
+              print("사용자 정보 추가 중 오류가 발생했습니다: $error");
+            });
           });
-        });
-
-      }
-    });
+        }
+      });
+    }
   }
-}
-
 
   // botomNavIndex를 프로바이더에서 꺼내옴
   int _bottomNavIndex(BuildContext context) {
@@ -66,7 +67,8 @@ class _MyProfilePageLogout extends State<MyProfilePageLogout> {
 
   //탭 클릭 시 프로바이더에 탭의 인덱스를 저장
   void _onItemTapped(BuildContext context, int index) {
-    Provider.of<WecoordiProvider>(context, listen: false).bottomNavIndex = index;
+    Provider.of<WecoordiProvider>(context, listen: false).bottomNavIndex =
+        index;
   }
 
   // 구글 로그인 기능 추가
@@ -83,7 +85,8 @@ class _MyProfilePageLogout extends State<MyProfilePageLogout> {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
 
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
