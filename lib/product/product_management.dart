@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,8 @@ class ProductManagement extends StatefulWidget {
 }
 
 class _ProductManagementState extends State<ProductManagement> {
+  List<Map<String, dynamic>> _products = [];
+
   // botomNavIndex를 프로바이더에서 꺼내옴
   int _bottomNavIndex(BuildContext context) {
     return Provider.of<WecoordiProvider>(context).bottomNavIndex;
@@ -40,7 +43,23 @@ class _ProductManagementState extends State<ProductManagement> {
           Provider.of<WecoordiProvider>(context, listen: false).userId;
 
       if (user != null && user.email == userId) {
-        //
+        // Firestore에서 product 데이터 가져오기
+        DocumentSnapshot snapshot = await FirebaseFirestore.instance
+            .collection('user')
+            .doc(userId)
+            .get();
+
+        if (snapshot.exists) {
+          Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+          if (data.containsKey('product')) {
+            List<dynamic> productData = data['product'];
+            if (productData.isNotEmpty) {
+              setState(() {
+                _products = List<Map<String, dynamic>>.from(productData);
+              });
+            }
+          }
+        }
       } else {
         // 현재로그인아이디, 앱의 프로바이더에 설정된 아이디가 아니면 전 화면으로 튕겨나감.
         Navigator.pop(context);
@@ -67,6 +86,32 @@ class _ProductManagementState extends State<ProductManagement> {
             },
           ),
         ],
+      ),
+      body: ListView.builder(
+        itemCount: _products.length,
+        itemBuilder: (BuildContext context, int index) {
+          final product = _products[index];
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(product['title'] ?? "Unknown Title"),
+                ),
+                Expanded(
+                  child: Text(product['content'] ?? "Unknown Content"),
+                ),
+                Expanded(
+                  child: Text(product['category1'] ?? "Unknown Category"),
+                ),
+                Expanded(
+                  child: Text(product['category2'] ?? "Unknown Category"),
+                ),
+                // 다른 필드들도 이와 같이 추가하세요.
+              ],
+            ),
+          );
+        },
       ),
       bottomNavigationBar: BottomBar(
         bottomNavIndex: _bottomNavIndex,
