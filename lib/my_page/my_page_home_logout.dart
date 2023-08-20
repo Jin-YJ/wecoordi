@@ -40,11 +40,12 @@ class _MyProfilePageLogout extends State<MyProfilePageLogout> {
             userDocRef.set({
               'email': user.email,
               'nickName': defaultNickName,
-              'Reserves': 0,
+              'reserves': 0,
               'introMsg': '',
               'profileImage': '',
               'userHeight': 0.0,
               'userWeight': 00.0,
+              'amount': 0
               // 기타 추가할 사용자 정보 필드가 있다면 이곳에 추가 가능
             }).then((_) {
               Navigator.pushReplacement(

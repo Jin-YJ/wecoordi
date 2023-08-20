@@ -24,10 +24,10 @@ class _WecoordiMainState extends State<WecoordiMain> {
 
   void _onItemTapped(BuildContext context, int index) {
     // 프로바이더를 통해 선택된 인덱스를 업데이트합니다.
-    Provider.of<WecoordiProvider>(context, listen: false).bottomNavIndex = index;
+    Provider.of<WecoordiProvider>(context, listen: false).bottomNavIndex =
+        index;
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +36,7 @@ class _WecoordiMainState extends State<WecoordiMain> {
         children: [
           Container(
             color: Colors.white,
-            height: 48,
+            height: 40,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: 2,

@@ -112,26 +112,6 @@ class ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
-      SizedBox(width: 10), // 프로필 수정 버튼과 상품 관리 버튼 사이의 간격
-      // 상품 관리 버튼
-      Expanded(
-        child: SizedBox(
-          height: 20,
-          child: ElevatedButton(
-            onPressed: () {
-              // 상품 관리 버튼을 눌렀을 때 동작할 로직 추가
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProductManagement()),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              primary: Colors.white.withOpacity(0.9),
-            ),
-            child: Text('상품 관리', style: TextStyle(color: Colors.black)),
-          ),
-        ),
-      ),
     ];
   }
 
@@ -290,7 +270,8 @@ class ProfilePageState extends State<ProfilePage> {
         },
         mini: true,
         child: Icon(Icons.add),
-        backgroundColor: Colors.blue,
+        backgroundColor: Color(0xFFE8E8E8),
+        foregroundColor: Colors.black54,
       ),
     );
   }
