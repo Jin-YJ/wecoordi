@@ -19,17 +19,18 @@ class BottomBar extends StatelessWidget {
   void _getUserData(context) async {
     // Firebase 사용자 정보 가져오기
     userId = Provider.of<WecoordiProvider>(context, listen: false).userId;
-      
+
     // Firestore에서 userId를 사용하여 데이터 조회
     QuerySnapshot userData = await FirebaseFirestore.instance
-        .collection('user') 
-        .where('email', isEqualTo:userId)
+        .collection('user')
+        .where('email', isEqualTo: userId)
         .get();
     if (!userData.docs.isNotEmpty) {
       // 회원이 아닐경우
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MyProfilePageLogout()), // 프로필 페이지로 이동
+        MaterialPageRoute(
+            builder: (context) => MyProfilePageLogout()), // 프로필 페이지로 이동
       );
       // 예를 들어, 버튼 추가 등
     } else {
@@ -39,14 +40,17 @@ class BottomBar extends StatelessWidget {
         MaterialPageRoute(builder: (context) => MyPageHomeLogin()),
       );
     }
-    
   }
 
-  BottomBar({required this.bottomNavIndex, required this.onItemTapped, required this.context});
+  BottomBar(
+      {required this.bottomNavIndex,
+      required this.onItemTapped,
+      required this.context});
 
   @override
   Widget build(BuildContext context) {
-    int currentIndex = bottomNavIndex(context); // bottomNavInex 함수를 호출하여 인덱스 값을 가져옴
+    int currentIndex =
+        bottomNavIndex(context); // bottomNavInex 함수를 호출하여 인덱스 값을 가져옴
 
     return CupertinoTabBar(
       items: <BottomNavigationBarItem>[
@@ -72,14 +76,15 @@ class BottomBar extends StatelessWidget {
         } else if (index == 0) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => WecoordiMain()), // 메인 페이지로 이동
+            MaterialPageRoute(
+                builder: (context) => WecoordiMain()), // 메인 페이지로 이동
           );
         } else {
           // 다른 인덱스의 아이템을 클릭한 경우, 메인 클래스에서 처리
         }
         onItemTapped(index);
       },
-      activeColor: Colors.blue,
+      activeColor: Colors.red,
       inactiveColor: Colors.grey,
       backgroundColor: Colors.white,
     );
