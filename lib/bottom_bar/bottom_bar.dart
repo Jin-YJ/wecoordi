@@ -84,7 +84,7 @@ class BottomBar extends StatelessWidget {
         }
         onItemTapped(index);
       },
-      activeColor: Colors.yellow,
+      activeColor: Colors.green,
       inactiveColor: Colors.grey,
       backgroundColor: Colors.white,
     );
