@@ -50,12 +50,13 @@ class _wecoordiHomeState extends State<wecoordiHome> {
   void initState() {
     super.initState();
     // 사용자의 이메일을 가져와 _userId에 저장
-    
-    if(_auth.currentUser != null) {
-      _userId = _auth.currentUser!.email;
-      Provider.of<WecoordiProvider>(context, listen: false).userId = _userId!; // _userId 저장
-    }
-    
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_auth.currentUser != null) {
+        _userId = _auth.currentUser!.email;
+        Provider.of<WecoordiProvider>(context, listen: false).userId = _userId!;
+      }
+    });
   }
 
   @override

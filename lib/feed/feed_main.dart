@@ -202,6 +202,8 @@ class _FeedMainState extends State<FeedMain> {
     final int batchSize = 10; // Firestore의 제한값
     final Map<String, String> nickNames = {};
 
+    emails.removeWhere((email) => email == null);
+
     for (int i = 0; i < emails.length; i += batchSize) {
       final endRange =
           (i + batchSize > emails.length) ? emails.length : i + batchSize;
@@ -404,7 +406,7 @@ class _FeedMainState extends State<FeedMain> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ProfilePage(
-                        userId: userData['email'],
+                          userId: userData['email'],
                         ),
                       ),
                     );

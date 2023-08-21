@@ -56,6 +56,14 @@ class _MyProfilePageLogout extends State<MyProfilePageLogout> {
               print("사용자 정보 추가 중 오류가 발생했습니다: $error");
             });
           });
+        } else {
+          Provider.of<WecoordiProvider>(context, listen: false).userId =
+              user.email!;
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MyPageHomeLogin()),
+          );
         }
       });
     }

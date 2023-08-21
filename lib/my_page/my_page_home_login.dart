@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../app_bar/wecoordiappbar.dart';
 import '../bottom_bar/bottom_bar.dart';
 import '../wecoordi_provider/wecoordi_provider.dart';
+import 'my_page_home_logout.dart';
 
 class MyPageHomeLogin extends StatefulWidget {
   @override
@@ -14,6 +16,7 @@ class MyPageHomeLogin extends StatefulWidget {
 class _MyPageHomeLogin extends State<MyPageHomeLogin> {
   // Firestore instance 생성
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   late String? profileImage = null;
   late String? nickName = null;
   late int? amount = null;
@@ -41,6 +44,20 @@ class _MyPageHomeLogin extends State<MyPageHomeLogin> {
         nickName = data['nickName'];
         amount = data['amount'];
       });
+    }
+  }
+
+  //로그아웃
+  Future<void> _signOut() async {
+    try {
+      Provider.of<WecoordiProvider>(context, listen: false).userId = '';
+      await _auth.signOut(); // FirebaseAuth에서 로그아웃
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MyProfilePageLogout()),
+      );
+    } catch (e) {
+      print("Error signing out: $e");
     }
   }
 
@@ -145,17 +162,41 @@ class _MyPageHomeLogin extends State<MyPageHomeLogin> {
               SizedBox(height: 10),
               Row(
                 children: [
-                  Icon(CupertinoIcons.list_bullet),
-                  SizedBox(width: 10),
-                  Text('판매 내역'),
+                  SizedBox(width: 20),
+                  GestureDetector(
+                    onTap: () {
+                      // 판매 내역 텍스트를 탭했을 때의 로직
+                      print("판매 내역 클릭");
+                    },
+                    child: Text('판매 내역'),
+                  ),
                 ],
               ),
               SizedBox(height: 10),
               Row(
                 children: [
-                  Icon(CupertinoIcons.cart),
-                  SizedBox(width: 10),
-                  Text('구매 내역'),
+                  SizedBox(width: 20),
+                  GestureDetector(
+                    onTap: () {
+                      // 구매 내역 텍스트를 탭했을 때의 로직
+                      print("구매 내역 클릭");
+                    },
+                    child: Text('구매 내역'),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  SizedBox(width: 20),
+                  GestureDetector(
+                    onTap: () {
+                      // 로그아웃 텍스트를 탭했을 때의 로직
+                      _signOut();
+                      print("로그아웃 클릭");
+                    },
+                    child: Text('로그아웃'),
+                  ),
                 ],
               ),
             ],
