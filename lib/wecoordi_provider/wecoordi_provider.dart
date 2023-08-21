@@ -8,12 +8,16 @@ class WecoordiProvider extends ChangeNotifier {
   String get userId => _userId;
 
   set bottomNavIndex(int index) {
-    _bottomNavIndex = index;
-    notifyListeners();
+    if (_bottomNavIndex != index) {
+      _bottomNavIndex = index;
+      notifyListeners();
+    }
   }
 
   set userId(String userId) {
-    _userId = userId;
-    notifyListeners();
+    if (_userId != userId) {
+      _userId = userId;
+      notifyListeners();
+    }
   }
 }

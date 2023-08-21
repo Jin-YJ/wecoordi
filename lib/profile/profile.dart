@@ -39,6 +39,13 @@ class ProfilePageState extends State<ProfilePage> {
   Future<void> fetchUserDataAndFeeds() async {
     try {
       User? currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        //로그아웃인 경우
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MyProfilePageLogout()),
+        );
+      }
       if (currentUser?.email == widget.userId) {
         myProfileYn = true;
       } else {
@@ -74,6 +81,7 @@ class ProfilePageState extends State<ProfilePage> {
           });
         }
       } else {
+        //회원이 아닌경우
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MyProfilePageLogout()),
