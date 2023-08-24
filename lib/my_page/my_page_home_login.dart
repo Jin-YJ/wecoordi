@@ -83,7 +83,7 @@ class _MyPageHomeLogin extends State<MyPageHomeLogin> {
             children: [
               Row(
                 children: [
-                  if (profileImage != null)
+                  if (profileImage != null && profileImage != '')
                     CircleAvatar(
                       backgroundImage: NetworkImage(profileImage!),
                       radius: 30,
